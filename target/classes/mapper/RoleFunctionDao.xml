@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.auth.dao.RoleFunctionDao">
+    <select id="findById" resultType="RoleFunction">
+        select *
+        from auth_role_function
+        WHERE id=#{id};
+    </select>
+    <select id="findByRoleId" resultType="RoleFunction">
+        select *
+        from auth_role_function
+        WHERE role_id=#{roleId};
+    </select>
+    <delete id="deleteByRoleId">
+        DELETE FROM auth_roleFunction
+        WHERE role_id=#{roleId};
+    </delete>
+    <insert id="save" parameterType="java.util.List">
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO auth_role_function(role_id,function_id,status)
+        VALUES 
+        <foreach collection="list" item="roleFunction" index="index" separator=",">
+            (#{roleFunction.roleId},#{roleFunction.functionId},#{roleFunction.status})
+        </foreach>
+    </insert>
+</mapper>

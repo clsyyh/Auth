@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.auth.dao.DeptDao">
+    <select id="selectById" resultType="Dept">
+        SELECT *
+        FROM dept_inf
+        WHERE ID=#{id};
+    </select>
+    <delete id="deleteById" >
+        DELETE FROM dept_inf
+        WHERE ID=#{id};
+    </delete>
+    <sql id="key">
+        <trim suffixOverrides=",">
+            <if test="name!=null">
+                NAME,
+            </if>
+
+            REMARK,
+
+        </trim>
+    </sql>
+    <sql id="value">
+        <trim suffixOverrides=",">
+            <if test="name!=null">
+                #{name},
+            </if>
+
+            #{remark},
+
+        </trim>
+    </sql>
+    <insert id="save" parameterType="Dept">
+        insert into dept_inf(<include refid="key"/>)
+        values(<include refid="value"/>);
+    </insert>
+    <update id="update" parameterType="Dept">
+        UPDATE dept_inf
+        <set>
+            <if test="name!=null" >NAME=#{name},</if>
+            REMARK=#{remark},
+        </set>
+        WHERE ID=#{id};
+    </update>
+    <select id="selectByPage" parameterType="HashMap" resultType="Dept">
+        SELECT *
+        FROM dept_inf
+        <where>
+            <if test="dept.name!=null">
+                NAME LIKE CONCAT ('%',#{dept.name},'%')
+            </if>
+        </where>
+    </select>
+    <select id="count" resultType="int" parameterType="HashMap">
+        SELECT count(*)
+        FROM dept_inf
+        <where>
+            <if test="dept.name!=null">
+                NAME LIKE CONCAT ('%',#{dept.name},'%')
+            </if>
+        </where>
+    </select>
+    <select id="selectAllDept" resultType="Dept">
+        select *
+        from dept_inf;
+    </select>
+</mapper>

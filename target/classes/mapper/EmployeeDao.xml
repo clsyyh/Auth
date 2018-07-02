@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.auth.dao.EmployeeDao">
+    <select id="selectById" resultMap="employeeResultMap">
+        SELECT *
+        FROM employee_inf
+        WHERE ID=#{id};
+    </select>
+    <resultMap id="employeeResultMap" type="Employee">
+        <id property="id" column="id"/>
+        <result property="zp" column="photo"/>
+        <result property="name" column="name"/>
+        <result property="cardId" column="card_id"/>
+        <result property="address" column="address"/>
+        <result property="postCode" column="post_code"/>
+        <result property="tel" column="tel"/>
+        <result property="phone" column="phone"/>
+        <result property="qqNum" column="qq_num"/>
+        <result property="email" column="email"/>
+        <result property="sex" column="sex"/>
+        <result property="party" column="party"/>
+        <result property="birthday" column="birtyday"/>
+        <result property="race" column="race"/>
+        <result property="education" column="education"/>
+        <result property="speciality" column="speciality"/>
+        <result property="hoby" column="hoby"/>
+        <result property="remark" column="remark"/>
+        <result property="createDate" column="create_date"/>
+        <association property="dept" javaType="Dept"
+                     column="dept_id" select="org.auth.dao.DeptDao.selectById"
+                     fetchType="eager"/>
+        <association property="job" javaType="Role"
+                     column="job_id" select="org.auth.dao.RoleDao.findRoleById"
+                     fetchType="eager"/>
+    </resultMap>
+    <delete id="deleteById" >
+        DELETE FROM employee_inf
+        WHERE ID=#{id};
+    </delete>
+    <sql id="key">
+        <trim suffixOverrides=",">
+            <if test="dept!=null">
+                DEPT_ID,
+            </if>
+            <if test="job!=null">
+                JOB_ID,
+            </if>
+            <if test="zp!=null">
+                PHOTO,
+            </if>
+            <if test="name!=null">
+                NAME,
+            </if>
+            <if test="cardId!=null">
+                CARD_ID,
+            </if>
+            <if test="address!=null">
+                ADDRESS,
+            </if>
+            <if test="postCode!=null">
+                POST_CODE,
+            </if>
+            <if test="tel!=null">
+                tel,
+            </if>
+            <if test="phone!=null">
+                PHONE,
+            </if>
+            <if test="qqNum!=null">
+                QQ_NUM,
+            </if>
+            <if test="email!=null">
+                EMAIL,
+            </if>
+            <if test="sex!=null">
+                SEX,
+            </if>
+            <if test="party!=null">
+                PARTY,
+            </if>
+            <if test="birthday!=null">
+                BIRTHDAY,
+            </if>
+            <if test="race!=null">
+                RACE,
+            </if>
+            <if test="education!=null">
+                EDUCATION,
+            </if>
+            <if test="speciality!=null">
+                SPECIALITY,
+            </if>
+            <if test="hoby!=null">
+                HOBY,
+            </if>
+            <if test="remark!=null">
+                REMARK,
+            </if>
+            <if test="createDate!=null">
+                CREATE_DATE,
+            </if>
+        </trim>
+    </sql>
+    <sql id="value">
+        <trim suffixOverrides=",">
+            <if test="dept!=null">
+                #{dept.id},
+            </if>
+            <if test="job!=null">
+                #{job.id},
+            </if>
+            <if test="zp!=null">
+                #{zp},
+            </if>
+            <if test="name!=null">
+                #{name},
+            </if>
+            <if test="cardId!=null">
+                #{cardId},
+            </if>
+            <if test="address!=null">
+                #{address},
+            </if>
+            <if test="postCode!=null">
+                #{postCode},
+            </if>
+            <if test="tel!=null">
+                #{tel},
+            </if>
+            <if test="phone!=null">
+                #{phone},
+            </if>
+            <if test="qqNum!=null">
+                #{qqNum},
+            </if>
+            <if test="email!=null">
+                #{email},
+            </if>
+            <if test="sex!=null">
+                #{sex},
+            </if>
+            <if test="party!=null">
+                #{party},
+            </if>
+            <if test="birthday!=null">
+                #{birthday},
+            </if>
+            <if test="race!=null">
+                #{race},
+            </if>
+            <if test="education!=null">
+                #{education},
+            </if>
+            <if test="speciality!=null">
+                #{speciality},
+            </if>
+            <if test="hoby!=null">
+                #{hoby},
+            </if>
+            <if test="remark!=null">
+                #{remark},
+            </if>
+            <if test="createDate!=null">
+                #{createDate},
+            </if>
+        </trim>
+    </sql>
+    <insert id="save" parameterType="Employee">
+        insert into employee_inf(<include refid="key"/>)
+        values(<include refid="value"/>);
+    </insert>
+    <update id="update" parameterType="Employee">
+        UPDATE employee_inf
+        <set>
+            <if test="dept!=null">DEPT_ID=#{dept.id},</if>
+            <if test="job!=null">JOB_ID=#{job.id},</if>
+            <!--属性zp只是一个指针？？？-->
+            <if test="zp!=null">PHOTO=#{zp},</if>
+            <if test="name!=null" >NAME=#{name},</if>
+            <if test="cardId!=null">CARD_ID=#{cardId},</if>
+            <if test="address!=null">ADDRESS=#{address},</if>
+            <if test="postCode!=null">POST_CODE=#{postCode},</if>
+            <if test="tel!=null">TEL=#{tel},</if>
+            <if test="phone!=null">PHONE=#{phone},</if>
+            <if test="qqNum!=null">QQ_NUM=#{qqNum},</if>
+            <if test="email!=null">EMAIL=#{email},</if>
+            <if test="sex!=null">SEX=#{sex},</if>
+            <if test="party!=null">PARTY=#{party},</if>
+            <if test="birthday!=null">BIRTHDAY=#{birthday},</if>
+            <if test="race!=null">RACE=#{race},</if>
+            <if test="education!=null">EDUCATION=#{education},</if>
+            <if test="speciality!=null">SPECIALITY=#{speciality},</if>
+            <if test="hoby!=null">HOBY=#{hoby},</if>
+            <if test="remark!=null">REMARK=#{remark},</if>
+            <if test="createDate!=null">CREATE_DATE=#{createDate},</if>
+        </set>
+        WHERE ID=#{id};
+    </update>
+    <select id="selectByPage" resultMap="employeeResultMap" parameterType="HashMap">
+        SELECT *
+        FROM employee_inf
+        <where>
+            <if test="employee.dept!=null and employee.dept.id!=null">
+                DEPT_ID=#{employee.dept.id}
+            </if>
+            <if test="employee.job!=null and employee.job.id!=null">
+                AND JOB_ID=#{employee.job.id}
+            </if>
+            <if test="employee.name!=null">
+                AND  NAME LIKE CONCAT('%',#{employee.name},'%')
+            </if>
+        </where>
+    </select>
+    <select id="count" parameterType="HashMap" resultType="int">
+        SELECT count(*)
+        FROM employee_inf
+        <where>
+            <if test="employee.dept!=null and employee.dept.id!=null">
+                DEPT_ID=#{employee.dept.id}
+            </if>
+            <if test="employee.job!=null and employee.job.id!=null">
+                AND JOB_ID=#{employee.job.id}
+            </if>
+            <if test="employee.name!=null">
+                AND  NAME LIKE CONCAT('%',#{employee.name},'%')
+            </if>
+        </where>
+    </select>
+    <select id="findAllEmployees" resultMap="employeeResultMap">
+        SELECT *
+        FROM employee_inf
+    </select>
+</mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.auth.dao.UserRoleDao">
+    <select id="findById" resultType="UserRole">
+        SELECT *
+        FROM auth_user_role
+        WHERE id=#{id};
+    </select>
+    <select id="findByUserId" resultType="UserRole">
+        select *
+        from auth_user_role
+        WHERE user_id=#{userId};
+    </select>
+    <delete id="deleteByUserId">
+        DELETE FROM auth_user_role
+        WHERE user_id=#{userId};
+    </delete>
+    <!--批量插入注意获取自增主键值和括号的使用-->
+    <insert id="save" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+          SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO auth_user_role(role_id,user_id)
+        VALUES
+      <foreach collection="list" item="userRole" index="index" separator=",">
+          (#{userRole.roleId},#{userRole.userId})
+      </foreach>
+    </insert>
+    <select id="findUserRoles" parameterType="java.util.List" resultType="UserRole">
+        SELECT *
+        FROM auth_user_role
+        WHERE id IN
+        <foreach collection="list" item="id" separator="," index="index" open="(" close=")"  >
+            #{id}
+        </foreach>
+    </select>
+    <select id="findAllUserRoles" resultType="UserRole">
+        select *
+        from auth_user_role
+    </select>
+</mapper>

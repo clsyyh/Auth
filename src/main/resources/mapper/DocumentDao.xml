@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.auth.dao.DocumentDao">
+    <select id="selectById" resultMap="documentResultMap" parameterType="int">
+        SELECT *
+        FROM document_inf
+        WHERE ID=#{id};
+    </select>
+    <resultMap id="documentResultMap" type="Document">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="filename" column="filename"/>
+        <result property="remark" column="remark"/>
+        <result property="createDate" column="create_date"/>
+        <association property="user" javaType="User"
+                     column="user_id" select="org.auth.dao.UserDao.findUserById"
+                     fetchType="eager"/>
+    </resultMap>
+    <delete id="deleteById" >
+        DELETE FROM document_inf
+        WHERE ID=#{id};
+    </delete>
+    <sql id="key">
+        <trim suffixOverrides=",">
+            <if test="title!=null">
+                TITLE,
+            </if>
+            <if test="filename!=null">
+                FILENAME,
+            </if>
+            <if test="remark!=null">
+                REMARK,
+            </if>
+
+            CREATE_DATE,
+
+            <if test="user!=null">
+                USER_ID,
+            </if>
+        </trim>
+    </sql>
+    <sql id="value">
+        <trim suffixOverrides=",">
+            <if test="title!=null">
+                #{title},
+            </if>
+            <if test="filename!=null">
+                #{filename},
+            </if>
+            <if test="remark!=null">
+                #{remark},
+            </if>
+
+            #{createDate},
+
+            <if test="user!=null">
+                #{user.id},
+            </if>
+        </trim>
+    </sql>
+    <insert id="save" parameterType="Document">
+        insert into document_inf(<include refid="key"/>)
+        values(<include refid="value"/>);
+    </insert>
+    <!--因为不修改创建时间，且其为默认值，所以不需要此修改语句-->
+    <update id="update" parameterType="Document">
+        UPDATE document_inf
+        <set>
+            <if test="title!=null">TITLE=#{title},</if>
+            <if test="filename!=null">FILENAME=#{filename},</if>
+            <if test="remark!=null">REMARK=#{remark},</if>
+            <if test="createDate!=null" >CREATE_DATE=#{createDate},</if>
+            <if test="user!=null">USER_ID=#{user.id},</if>
+        </set>
+        WHERE ID=#{id};
+    </update>
+    <select id="selectByPage" parameterType="HashMap" resultMap="documentResultMap">
+        select *
+        from document_inf
+        <!--
+         <where>
+             <if test="document!=null">
+                 TITLE LIKE CONCAT('%',#{document.title},'%')
+             </if>
+         </where>
+         -->
+    </select>
+    <select id="count" resultType="int" parameterType="HashMap">
+        select count(*)
+        from document_inf
+        <where>
+            <if test="document!=null">
+                TITLE LIKE CONCAT('%',#{document.title},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

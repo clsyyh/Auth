@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.auth.dao.CommentDao">
+    <!--多表连接查询
+        SELECT *
+        FROM question a,comment b
+        WHERE a.id=b.question_id AND b.id=#{id}
+    -->
+    <select id="selectById" resultMap="commentResultMap">
+        SELECT *
+        FROM comment
+        WHERE id=#{id}
+    </select>
+    <!--根据外键查询-->
+    <select id="selectByQuestionId" resultMap="commentResultMap">
+        SELECT *
+        FROM comment
+        WHERE question_id=#{id}
+    </select>
+    <resultMap id="commentResultMap" type="Comment">
+        <id property="id" column="id"/>
+        <result property="questionId" column="questionId"/>
+        <result property="comment" column="comment"/>
+        <result property="date" column="date"/>
+        <association property="user"  javaType="User"
+                     column="user_id" select="org.auth.dao.UserDao.findUserById"
+                     fetchType="eager"/>
+        <!--
+        <association property="question" javaType="Question">
+            <id property="id" column="id"/>
+            <result property="title" column="title"/>
+            <result property="content" column="content"/>
+            <result property="date" column="date"/>
+            <result property="count" column="count"/>
+            <association property="user"  javaType="User"
+                         column="user_id" select="org.auth.dao.UserDao.findUserById"
+                         fetchType="eager"/>
+        </association>
+        -->
+    </resultMap>
+    <sql id="key">
+        <trim suffixOverrides=",">
+            <if test="questionId!=null">
+                question_id,
+            </if>
+            <if test="user!=null">
+                user_id,
+            </if>
+            <if test="comment!=null">
+                comment,
+            </if>
+            <if test="date!=null">
+                date,
+            </if>
+        </trim>
+    </sql>
+    <sql id="value">
+        <trim suffixOverrides=",">
+            <if test="questionId!=null">
+                #{questionId},
+            </if>
+            <if test="user!=null">
+                #{user.id},
+            </if>
+            <if test="comment!=null">
+                #{comment},
+            </if>
+            <if test="date!=null">
+                #{date},
+            </if>
+        </trim>
+    </sql>
+    <insert id="addComment" parameterType="Comment">
+        INSERT INTO  comment(<include refid="key"/>)
+        values(<include refid="value"/>);
+    </insert>
+</mapper>

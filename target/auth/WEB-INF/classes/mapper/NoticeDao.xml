@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.auth.dao.NoticeDao">
+    <select id="selectById" resultMap="noticeResultMap" >
+        SELECT *
+        FROM notice_inf
+        WHERE ID=#{id};
+    </select>
+    <resultMap id="noticeResultMap" type="Notice">
+        <id property="id" column="ID"/>
+        <result property="title" column="TITLE"/>
+        <result property="content" column="CONTENT"/>
+        <result property="createDate" column="CREATE_DATE"/>
+        <!--要用字段user_id传值给findUserById,所以字段user_id一定不能是空值-->
+        <association property="user" javaType="User"
+                     column="USER_ID" select="org.auth.dao.UserDao.findUserById"
+                     fetchType="eager"/>
+    </resultMap>
+    <delete id="deleteById" >
+        DELETE FROM notice_inf
+        WHERE ID=#{id};
+    </delete>
+    <sql id="key">
+        <trim suffixOverrides=",">
+            <if test="title!=null">
+                TITLE,
+            </if>
+            <if test="content!=null">
+                CONTENT,
+            </if>
+
+            CREATE_DATE,
+
+
+            USER_ID,
+
+        </trim>
+    </sql>
+    <sql id="value">
+        <trim suffixOverrides=",">
+            <if test="title!=null">
+                #{title},
+            </if>
+            <if test="content!=null">
+                #{content},
+            </if>
+
+            #{createDate},
+
+
+            #{user.id},
+
+        </trim>
+    </sql>
+    <insert id="save" parameterType="Notice">
+        insert into notice_inf(<include refid="key"/>)
+        values(<include refid="value"/>);
+    </insert>
+    <update id="update" parameterType="Notice">
+        UPDATE notice_inf
+        <set>
+            <if test="title!=null">TITLE=#{title},</if>
+            <if test="content!=null">CONTENT=#{content},</if>
+            <!--因为不修改创建时间，且其为默认值，所以不需要此修改语句-->
+            <if test="createDate!=null" >CREATE_DATE=#{createDate},</if>
+            USER_ID=#{user.id},
+        </set>
+        WHERE ID=#{id};
+    </update>
+    <select id="selectByPage" parameterType="HashMap" resultMap="noticeResultMap">
+        SELECT *
+        FROM notice_inf
+        <!--模糊查询or查询所有-->
+        <!--<where>只有在一个以上的if条件有值的情况下才插入WHERE子句-->
+        <where>
+            <if test="notice!=null">
+                TITLE =#{notice.title}
+            </if>
+        </where>
+    </select>
+    <select id="count" parameterType="HashMap" resultType="int">
+        SELECT count(*)
+        FROM notice_inf
+        <where>
+            <if test="notice!=null">
+                TITLE LIKE CONCAT('%',#{notice.title},'%')
+            </if>
+        </where>
+    </select>
+    <select id="findAllNotices" resultMap="noticeResultMap">
+        SELECT *
+        FROM notice_inf;
+    </select>
+</mapper>
